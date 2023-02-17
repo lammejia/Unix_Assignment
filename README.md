@@ -75,6 +75,47 @@ By inspecting this file I learned that:
 
 ###Maize Data
 
+First I created a file with the headers on the file using the following code.
+
+```
+$ head -n 1 fang_et_al_genotypes.txt > maize_fang.txt
+```
+
+I then used grep to find all mteosinte data and added it to the file with my header using the following code. The >> tells Unix not to edit the file but rather to add onto it.
+
+```
+$ grep -E "(ZMMIL|ZMMLR|ZMMMR)" fang_et_al_genotypes.txt >> maize_fang.txt
+```
+
+Then using the code provided by Dr. Hufford I transposed the data with the following code.
+
+```
+$ awk -f transpose.awk maize_fang.txt > transposed_maize.txt
+```
+
+I then got rid of any header data which is unnecessary.
+
+```
+$ tail -n +4 transposed_maize.txt > headless_maize.txt
+```
+I then sorted my headless_maize.txt using the following code.
+
+```
+$ sort -k1,1 headless_maize.txt > sorted_teosinte.txt
+```
+
+I then started working on my snp_position.txt by first getting rid of the header using the following code.
+
+```
+$ tail -n +1 snp_position.txt > headless_snp_position.txt
+```
+
+I then sorted my 
+headless snp position.txt with the following code:
+
+```
+$ sort -k1,1 headless_snp_position.txt > final_snp.txt
+```
 
 With both of my sorted snp and maize data I then joined using the common column (SNP ID) using the following code:
 
@@ -90,7 +131,7 @@ $ cut -f 1,3,4,16- joined_maize.txt > cleaned_joined_maize.txt
 With my joined file I then separated out chromosome numbers from the file and created its own file. i indicates a chromosome number I did this indiviually for chromosome 1-10.
 
 ```
-$ awk '$2 ~ /^i$/' cleaned_joined_maize.txt > chri_maize.txt #^i$ > chri_maize.txt
+$ awk '$2 ~ /^i$/' cleaned_joined_maize.txt > chri_maize.txt 
 ```
 
 Chromosomes (i=1..10) were arranged from increasing position with - replaced to ? using the following code:
@@ -128,30 +169,30 @@ For teosinte my code was very similar to the one run above.
 First I created a file with the headers on the file using the following code.
 
 ```
-$ head -n 1 fang_et_al_genotypes.txt > maize_fang.txt
+$ head -n 1 fang_et_al_genotypes.txt > teosinte_fang.txt
 ```
 
-I then used grep to find all maize data and added it to the file with my header using the following code. The >> tells Unix not to edit the file but rather to add onto it.
+I then used grep to find all mteosinte data and added it to the file with my header using the following code. The >> tells Unix not to edit the file but rather to add onto it.
 
 ```
-$ grep -E "(ZMMIL|ZMMLR|ZMMR)" fange_et_al_genotypes.txt >> maize_fang.txt
+$ grep -E "(ZMPBA|ZMPIL|ZMPJA)" fange_et_al_genotypes.txt >> teosinte_fang.txt
 ```
 
 Then using the code provided by Dr. Hufford I transposed the data with the following code.
 
 ```
-$ awk -f transpose.awk maize_fang.txt > transposed_maize.txt
+$ awk -f transpose.awk teosinte_fang.txt > transposed_teosinte.txt
 ```
 
 I then got rid of any header data which is unnecessary.
 
 ```
-$ tail -n +4 transposed_maize.txt > headless_maize.txt
+$ tail -n +4 transposed_teosinte.txt > headless_teosinte.txt
 ```
-I then sorted my headless_maize.txt using the following code.
+I then sorted my headless_teosinte.txt using the following code.
 
 ```
-$ sort -k1,1 headless_maize.txt > sorted_maize.txt
+$ sort -k1,1 headless_teosinte.txt > sorted_teosinte.txt
 ```
 
 I then started working on my snp_position.txt by first getting rid of the header using the following code.
@@ -167,8 +208,45 @@ headless snp position.txt with the following code:
 $ sort -k1,1 headless_snp_position.txt > final_snp.txt
 ```
 
+With both of my sorted snp and teosinte data I then joined using the common column (SNP ID) using the following code:
 
-Here is my brief description of what this code does
+```
+$ join -1 1 -2 1 -t $'\t' final_snp.txt sorted_teosinte.txt > joined_teosinte.txt
+```
+
+I then got rid of unnecessary columns and just kept chromosome number, location, and SNP ID.
+
+```
+$ cut -f 1,3,4,16- joined_teosinte.txt > cleaned_joined_teosinte.txt
+```
+With my joined file I then separated out chromosome numbers from the file and created its own file. i indicates a chromosome number I did this indiviually for chromosome 1-10.
+
+```
+$ awk '$2 ~ /^i$/' cleaned_joined_teosinte.txt > chri_teosinte.txt 
+```
+
+Chromosomes (i=1..10) were arranged from increasing position with - replaced to ? using the following code:
+
+```
+$ sed 's/-/?/g' chri_teosinte.txt | sort -k3,3n > chri_fwd_teosinte.txt
+```
+
+I sorted in reverse and replaced ? to - using the following code (i=1..10):
+
+```
+$ sed's/?/-/g' chri_teosinte.txt | sort -k3,3nr > chri_rev_teosinte.txt
+```
+
+Finding multiple positions.
+``` 
+$ grep multiple cleaned_joined_teosinte.txt > multiple_teosinte.txt
+```
+
+Finding unknown positions.
 
 
-hello this is hahahahaha
+```
+$ grep unknown cleaned_joined_teosinte.txt > unknown_teosinte.txt
+```
+
+
